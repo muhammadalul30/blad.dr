@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { changePassword, deleteAccount, updateProfile } from "@/actions/settings";
+import { deleteAccount, updateProfile } from "@/actions/settings";
 import { FieldError, FormMessage, SubmitButton } from "@/components/form";
 import type { Profile } from "@/lib/dal";
 
@@ -23,9 +23,9 @@ export function ProfileForm({ profile, today }: { profile: Profile; today: strin
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label htmlFor="name" className="label">
-            Nama lengkap
+            Nama <span className="font-normal text-muted">(juga dipakai untuk masuk)</span>
           </label>
-          <input id="name" name="name" required maxLength={100} defaultValue={profile.name} className="input" />
+          <input id="name" name="name" required minLength={2} maxLength={100} defaultValue={profile.name} className="input" />
           <FieldError errors={errors.name} />
         </div>
         <div>
@@ -136,55 +136,6 @@ export function ProfileForm({ profile, today }: { profile: Profile; today: strin
   );
 }
 
-export function PasswordForm() {
-  const [state, action] = useActionState(changePassword, {});
-  const errors = state.fieldErrors ?? {};
-
-  return (
-    <form action={action} className="max-w-sm space-y-4">
-      <div>
-        <label htmlFor="current" className="label">
-          Password saat ini
-        </label>
-        <input id="current" name="current" type="password" autoComplete="current-password" required className="input" />
-        <FieldError errors={errors.current} />
-      </div>
-      <div>
-        <label htmlFor="new-password" className="label">
-          Password baru <span className="font-normal text-muted">(minimal 10 karakter)</span>
-        </label>
-        <input
-          id="new-password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={10}
-          maxLength={72}
-          className="input"
-        />
-        <FieldError errors={errors.password} />
-      </div>
-      <div>
-        <label htmlFor="confirm-password" className="label">
-          Ulangi password baru
-        </label>
-        <input
-          id="confirm-password"
-          name="confirm"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="input"
-        />
-        <FieldError errors={errors.confirm} />
-      </div>
-      <FormMessage error={state.error} ok={state.ok && "Password diganti. Perangkat lain sudah dikeluarkan."} />
-      <SubmitButton>Ganti password</SubmitButton>
-    </form>
-  );
-}
-
 export function DeleteAccountForm() {
   const [state, action] = useActionState(deleteAccount, {});
   const errors = state.fieldErrors ?? {};
@@ -195,20 +146,6 @@ export function DeleteAccountForm() {
         Menghapus akun Anda beserta seluruh catatan BAK, hidrasi, dan IPSS milik Anda. Tidak bisa dibatalkan. Ekspor data
         lebih dulu bila masih diperlukan.
       </p>
-      <div>
-        <label htmlFor="delete-password" className="label">
-          Password
-        </label>
-        <input
-          id="delete-password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="input"
-        />
-        <FieldError errors={errors.password} />
-      </div>
       <div>
         <label htmlFor="delete-confirm" className="label">
           Ketik HAPUS

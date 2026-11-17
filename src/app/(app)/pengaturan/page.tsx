@@ -4,7 +4,7 @@ import { logout } from "@/actions/auth";
 import { PageHeader, Section } from "@/components/ui";
 import { requireUser } from "@/lib/dal";
 import { todayInTz } from "@/lib/time";
-import { DeleteAccountForm, PasswordForm, ProfileForm } from "./settings-forms";
+import { DeleteAccountForm, ProfileForm } from "./settings-forms";
 import Loading from "../loading";
 
 export const metadata: Metadata = { title: "Pengaturan" };
@@ -30,7 +30,7 @@ async function Content() {
 
   return (
     <div className="max-w-3xl space-y-5">
-      <PageHeader title="Pengaturan" description={user.email}>
+      <PageHeader title="Pengaturan" description={user.name}>
         <form action={logout}>
           <button type="submit" className="btn">
             Keluar
@@ -51,10 +51,6 @@ async function Content() {
             </a>
           ))}
         </div>
-      </Section>
-
-      <Section title="Ganti password">
-        <PasswordForm />
       </Section>
 
       <Section title="Hapus akun">

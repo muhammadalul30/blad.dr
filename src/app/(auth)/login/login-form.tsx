@@ -10,23 +10,10 @@ export function LoginForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="email" className="label">
-          Email
+        <label htmlFor="name" className="label">
+          Nama
         </label>
-        <input id="email" name="email" type="email" autoComplete="username" required className="input" />
-      </div>
-      <div>
-        <label htmlFor="password" className="label">
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="input"
-        />
+        <input id="name" name="name" autoComplete="username" required maxLength={100} className="input" />
       </div>
       <FormMessage error={state.error} />
       <SubmitButton className="btn btn-primary w-full">Masuk</SubmitButton>

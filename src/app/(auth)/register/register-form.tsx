@@ -21,51 +21,22 @@ export function RegisterForm({ needsCode }: { needsCode: boolean }) {
       <input ref={timezoneRef} type="hidden" name="timezone" defaultValue="Asia/Jakarta" />
       <div>
         <label htmlFor="name" className="label">
-          Nama lengkap
-        </label>
-        <input id="name" name="name" autoComplete="name" required maxLength={100} className="input" />
-        <FieldError errors={errors.name} />
-      </div>
-      <div>
-        <label htmlFor="email" className="label">
-          Email
-        </label>
-        <input id="email" name="email" type="email" autoComplete="username" required className="input" />
-        <FieldError errors={errors.email} />
-      </div>
-      <div>
-        <label htmlFor="password" className="label">
-          Password
+          Nama
         </label>
         <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
+          id="name"
+          name="name"
+          autoComplete="username"
           required
-          minLength={10}
-          maxLength={72}
-          aria-describedby="password-hint"
+          minLength={2}
+          maxLength={100}
+          aria-describedby="name-hint"
           className="input"
         />
-        <p id="password-hint" className="mt-1 text-xs text-muted">
-          Minimal 10 karakter.
+        <p id="name-hint" className="mt-1 text-xs text-muted">
+          Nama ini dipakai untuk masuk dan harus berbeda dari pengguna lain.
         </p>
-        <FieldError errors={errors.password} />
-      </div>
-      <div>
-        <label htmlFor="confirm" className="label">
-          Ulangi password
-        </label>
-        <input
-          id="confirm"
-          name="confirm"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="input"
-        />
-        <FieldError errors={errors.confirm} />
+        <FieldError errors={errors.name} />
       </div>
       {needsCode && (
         <div>
@@ -77,7 +48,7 @@ export function RegisterForm({ needsCode }: { needsCode: boolean }) {
         </div>
       )}
       <FormMessage error={state.error} />
-      <SubmitButton className="btn btn-primary w-full">Buat akun</SubmitButton>
+      <SubmitButton className="btn btn-primary w-full">Daftar</SubmitButton>
     </form>
   );
 }

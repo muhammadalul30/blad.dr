@@ -5,8 +5,9 @@ atau disalin untuk dokter. Banyak pengguna, satu jenis akun, tanpa admin.
 
 ## Fitur
 
-- **Akun.** Siapa pun bisa mendaftar dan masuk. Semua akun setara: tidak ada
-  peran, tidak ada admin, tidak ada halaman yang menampilkan pengguna lain.
+- **Akun.** Daftar dan masuk cukup dengan nama (unik, tidak peka huruf
+  besar/kecil). Semua akun setara: tidak ada peran, tidak ada admin, tidak ada
+  halaman yang menampilkan pengguna lain.
   Setiap pengguna hanya bisa membaca dan mengubah datanya sendiri.
 - **Catatan BAK.** Waktu, volume, skala urgensi 0–4, bocor, nokturia, warna urin,
   gejala (nyeri, hematuria, pancaran lemah, mengejan, terputus, tidak tuntas).
@@ -94,14 +95,13 @@ drizzle/             migrasi SQL
 
 ## Catatan keamanan dan data
 
-- Password di-hash bcrypt (12 putaran). Lima kali gagal login mengunci 15 menit.
+- Tidak ada password: siapa pun yang mengetik nama Anda bisa masuk ke akun
+  Anda dan membaca datanya. Pakai `REGISTRATION_CODE` dan jangan sebar URL bila
+  data perlu dijaga.
 - Setiap baris catatan menyimpan `user_id`; semua query, ubah, dan hapus
   menyaring dengan id pengguna dari sesi, bukan dari input klien.
-- Ganti password mengeluarkan perangkat lain milik akun itu.
-- Tidak ada admin, jadi tidak ada yang bisa mereset password atau menghapus akun
-  orang lain dari dalam aplikasi. Itu hanya bisa lewat akses langsung ke database.
+- Tidak ada admin, jadi tidak ada yang bisa menghapus akun orang lain dari
+  dalam aplikasi. Itu hanya bisa lewat akses langsung ke database.
 - Waktu catatan disimpan sebagai jam lokal pengguna, bukan UTC. Zona waktu
   diatur di Pengaturan.
-- Lupa password tidak punya alur pemulihan (tidak ada layanan email). Simpan
-  password di pengelola password.
 - Aplikasi ini alat pencatat, bukan alat diagnosis.

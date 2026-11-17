@@ -1,7 +1,6 @@
 "use server";
 
-import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -9,13 +8,14 @@ import { db } from "@/db";
 import { intakes, ipssEntries, users, voids } from "@/db/schema";
 import { requireUser } from "@/lib/dal";
 import { invalid, requiredInt, type FormState } from "@/lib/form";
-import { createSession, deleteSession } from "@/lib/session";
+import { loginKeyOf, nameSchema } from "@/lib/names";
+import { deleteSession } from "@/lib/session";
 import { TIME_RE, isRealDate, isValidTimezone, todayInTz } from "@/lib/time";
 
 const longText = z.string().trim().max(2000, "Maksimal 2000 karakter.").default("");
 
 const profileSchema = z.object({
-  name: z.string().trim().min(1, "Nama wajib diisi.").max(100),
+  name: nameSchema,
   birthDate: z
     .string()
     .transform((value) => value || null)
@@ -37,53 +37,26 @@ export async function updateProfile(_prev: FormState, formData: FormData): Promi
     return { fieldErrors: { birthDate: ["Tanggal lahir tidak boleh di masa depan."] } };
   }
 
-  await db.update(users).set(parsed.data).where(eq(users.id, user.id));
-  revalidatePath("/", "layout");
-  return { ok: true };
-}
+  const loginKey = loginKeyOf(parsed.data.name);
+  const [taken] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(and(eq(users.loginKey, loginKey), ne(users.id, user.id)));
+  if (taken) return { fieldErrors: { name: ["Nama ini sudah dipakai pengguna lain."] } };
 
-const passwordSchema = z
-  .object({
-    current: z.string().max(200),
-    password: z.string().min(10, "Minimal 10 karakter.").max(72, "Maksimal 72 karakter."),
-    confirm: z.string(),
-  })
-  .refine((v) => v.password === v.confirm, {
-    path: ["confirm"],
-    message: "Konfirmasi tidak sama dengan password baru.",
-  });
-
-async function passwordMatches(userId: number, password: string): Promise<boolean> {
-  const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, userId));
-  return row ? bcrypt.compare(password, row.hash) : false;
-}
-
-export async function changePassword(_prev: FormState, formData: FormData): Promise<FormState> {
-  const user = await requireUser();
-  const parsed = passwordSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return invalid(parsed.error);
-  if (!(await passwordMatches(user.id, parsed.data.current))) {
-    return { fieldErrors: { current: ["Password saat ini salah."] } };
-  }
-
-  // Kunci sesi baru: perangkat lain milik akun ini otomatis keluar.
-  const sessionKey = crypto.randomUUID();
+  // Nama sekaligus kunci login, jadi keduanya diperbarui bersama.
   await db
     .update(users)
-    .set({ passwordHash: await bcrypt.hash(parsed.data.password, 12), sessionKey })
+    .set({ ...parsed.data, loginKey })
     .where(eq(users.id, user.id));
-  await createSession({ userId: user.id, sessionKey });
+  revalidatePath("/", "layout");
   return { ok: true };
 }
 
 export async function deleteAccount(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
-  const password = String(formData.get("password") ?? "");
   if (formData.get("confirm") !== "HAPUS") {
     return { fieldErrors: { confirm: ["Ketik HAPUS untuk melanjutkan."] } };
-  }
-  if (!(await passwordMatches(user.id, password))) {
-    return { fieldErrors: { password: ["Password salah."] } };
   }
 
   // Hanya baris milik akun ini. Dihapus eksplisit, tidak bergantung pada ON DELETE CASCADE.

@@ -1,8 +1,13 @@
+import { Credit } from "@/components/credit";
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-4 py-10">
-      <p className="mb-6 text-sm font-semibold tracking-wide">Genitourinaria</p>
-      {children}
-    </main>
+    <div className="flex min-h-dvh flex-col px-4">
+      <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
+        <p className="mb-6 text-sm font-semibold tracking-wide">Genitourinaria</p>
+        {children}
+      </main>
+      <Credit className="py-6" />
+    </div>
   );
 }

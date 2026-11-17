@@ -11,11 +11,16 @@ export const users = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
-    /** Disimpan huruf kecil. */
-    email: text("email").notNull(),
+    /**
+     * Nama yang dinormalisasi (huruf kecil, spasi dirapikan): kunci login dan unik.
+     * Kolom fisiknya masih bernama "email" agar database lama tidak perlu migrasi.
+     */
+    loginKey: text("email").notNull(),
+    /** Tidak dipakai lagi sejak login cukup dengan nama; diisi string kosong. */
     passwordHash: text("password_hash").notNull(),
     /** Ditanam di token sesi; diganti saat password berubah agar sesi lama gugur. */
     sessionKey: text("session_key").notNull(),
+    /** Tidak dipakai lagi; kolom dibiarkan agar skema database tetap sama. */
     failedLogins: integer("failed_logins").notNull().default(0),
     lockedUntil: integer("locked_until"),
     timezone: text("timezone").notNull().default("Asia/Jakarta"),
@@ -28,7 +33,7 @@ export const users = sqliteTable(
     medications: text("medications").notNull().default(""),
     createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
   },
-  (t) => [uniqueIndex("users_email_idx").on(t.email)],
+  (t) => [uniqueIndex("users_email_idx").on(t.loginKey)],
 );
 
 export const voids = sqliteTable(

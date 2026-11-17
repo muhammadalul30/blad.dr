@@ -11,7 +11,7 @@ import { addDays } from "./time";
 // menyaring dengan id pengguna dari sesi, tidak pernah dari input klien.
 // Tidak ada peran: seorang pengguna hanya bisa menjangkau datanya sendiri.
 
-export type Profile = Omit<User, "passwordHash" | "sessionKey" | "failedLogins" | "lockedUntil">;
+export type Profile = Omit<User, "loginKey" | "passwordHash" | "sessionKey" | "failedLogins" | "lockedUntil">;
 
 export const getUser = cache(async (): Promise<Profile | null> => {
   const session = await readSession();
@@ -19,7 +19,7 @@ export const getUser = cache(async (): Promise<Profile | null> => {
   const [user] = await db.select().from(users).where(eq(users.id, session.userId));
   if (!user || user.sessionKey !== session.sessionKey) return null;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { passwordHash, sessionKey, failedLogins, lockedUntil, ...profile } = user;
+  const { loginKey, passwordHash, sessionKey, failedLogins, lockedUntil, ...profile } = user;
   return profile;
 });
 

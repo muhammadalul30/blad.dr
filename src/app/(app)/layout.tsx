@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { logout } from "@/actions/auth";
+import { Credit } from "@/components/credit";
 import { BottomNav, SideNav } from "@/components/nav";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="mx-auto w-full max-w-5xl px-4 pt-5 pb-24 md:px-8 md:pt-8 md:pb-12">{children}</main>
+      <div className="flex min-h-dvh flex-col">
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-5 md:px-8 md:pt-8">{children}</main>
+        {/* Ruang bawah di ponsel agar tidak tertutup menu bawah. */}
+        <Credit className="pt-10 pb-24 md:pb-8" />
+      </div>
 
       <Suspense>
         <BottomNav />
